@@ -13,6 +13,7 @@ count=0
 dir=0
 divWidth=213
 divHeight=160
+
 arrayX=[[0,213],[213,426],[426,639]]
 arrayY=[[0,160],[160,320],[320,480]]
 currentRightColumnPosition=None
@@ -20,13 +21,42 @@ currentRightLinePosition=None
 currentLeftColumnPosition=None
 currentLeftLinePosition=None
 blank=np.zeros((divHeight, divWidth, 3), dtype=np.uint8)
-pictures=[['13.png',[(107,80),(533,80)]],['22.png',[(320,80),(320,80)]],['26.png',[(320,80),(533,244)]],['29.png',[(320,80),(533,400)]],['42.png',[(107,244),(533,80)]],['46.png',[(107,244),(533,244)]],['49.png',[(107,244),(533,400)]],['72.png',[(107,396),(320,80)]],['76.png',[(107,396),(533,244)]]]#[picture,[posRigh,posLeft]] -> it is to put a point in the position that the player have to put their hands
-listPositions=[]
+pictures=[['13.png',[(107,80),(533,80)],[(0,0),(0,2)]],['22.png',[(320,80),(320,80)],[(0,1),(0,1)]],['26.png',[(320,80),(533,244)],[(0,1),(1,2)]],['29.png',[(320,80),(533,400)],[(0,1),(2,2)]],['42.png',[(107,244),(533,80)],[(1,0),(0,1)]],['46.png',[(107,244),(533,244)],[(1,0),(1,2)]],['49.png',[(107,244),(533,400)],[(1,0),(2,2)]],['72.png',[(107,396),(320,80)],[(2,0),(0,1)]],['76.png',[(107,396),(533,244)],[(2,0),(1,2)]]]#[picture,[posRigh,posLeft]] -> it is to put a point in the position that the player have to put their hands
+listPositions=None
+lastCorrectPositions=None
 randomValue=None
+firstAttempt=True
+jogo=True
+globalIndex=0
 def newAttempt():
-    global listPositions, randomValue
-    randomValue = random.randint(0, 8)
+    global pictures, listPositions, randomValue, lastCorrectPositions, currentRightColumnPosition, currentRightLinePosition, currentLeftColumnPosition, currentLeftLinePosition, globalIndex, firstAttempt, jogo
+    if (firstAttempt==True):
+       listPositions=[['26.png', [(320, 80), (533, 244)], [(0, 1), (1, 2)]], ['46.png', [(107, 244), (533, 244)], [(1, 0), (1, 2)]]]
+       firstAttempt=False
+    if (((currentRightLinePosition,currentRightColumnPosition)!=listPositions[globalIndex][2][1])or((currentLeftLinePosition,currentLeftColumnPosition)!=listPositions[globalIndex][2][0])):
+        print(jogo)
+        jogo=False
+        firstAttempt=True
+        clearInterval(varTimer)
+        # cap.release() # libera a câmera
+        # cv.destroyAllWindows() # fecha todas as janelas
+        print(jogo)
+    if(globalIndex==len(listPositions)-1):
+        print("ACABOOOOOOOU!!!")
+        clearInterval(varTimer)
+        updateList()
+        globalIndex=0
+    print(globalIndex)
+    globalIndex=globalIndex+1
+def updateList():
+    global listPositions, randomValue, lastCorrectPositions,currentRightColumnPosition,currentRightLinePosition,currentLeftColumnPosition,currentLeftLinePosition
+    
+    randomValue=random.randint(0, 8)
+    while(lastCorrectPositions==pictures[randomValue]):
+        randomValue=random.randint(0, 8)
     listPositions.append(pictures[randomValue])
+    lastCorrectPositions=pictures[randomValue]
+    print(listPositions)
 def onMouse(event, x, y, flags, param):
     if event == cv.EVENT_LBUTTONDOWN:
         print("Posição do mouse: x={}, y={}".format(x, y))
@@ -53,6 +83,8 @@ while True:
     cv.line(frame, (426, 0), (426, hCam), (0, 0, 0), 3)
     cv.line(frame, (0, divHeight), (wCam, divHeight), (0, 0, 0), 3)
     cv.line(frame, (0, 320), (wCam, 320), (0, 0, 0), 3)
+
+
     if len(lmList)!=0:
         leftHand=lmList[18]
         rightHand=lmList[17]
@@ -69,7 +101,6 @@ while True:
                 currentLeftColumnPosition=i
             if((leftHand[2]<arrayY[i][1])and(leftHand[2]>arrayY[i][0])):
                 currentLeftLinePosition=i
-        print(currentLeftColumnPosition, currentLeftLinePosition)
     cTime=time.time()
     fps=int(1/(cTime-pTime))
     pTime=cTime
@@ -77,12 +108,11 @@ while True:
     cv.putText(frame,str(segundos)+"s",(400,320),cv.FONT_HERSHEY_PLAIN,2,(255,0,255),3)#putText(frame,text,(positionX,positionY),font,tamanho,(B,G,R),espessura)
     cv.putText(frame,f"FPS: {(fps)}",(5,30),cv.FONT_HERSHEY_PLAIN,2,(255,0,255),3)#putText(frame,text,(positionX,positionY),font,tamanho,(B,G,R),espessura)
     key=cv.waitKey(1)#ESC = 27
-    if (randomValue != None):
-        img=cv.imread(f'imgs/positions/{pictures[randomValue][0]}')
-        img_resized = cv.resize(img, (divWidth, divHeight))  # redimensiona para divWidthxdivHeight pixels
-        frame[320:480,divWidth:426]=img_resized  # atualiza a região com a imagem redimensionada
-        cv.circle(frame, pictures[randomValue][1][0], 40, (0, 255, 0), -1)
-        cv.circle(frame, pictures[randomValue][1][1], 40, (0, 255, 0), -1)
+    img=cv.imread(f'imgs/positions/{listPositions[globalIndex][0]}')
+    img_resized = cv.resize(img, (divWidth, divHeight))  # redimensiona para divWidthxdivHeight pixels
+    frame[320:480,divWidth:426]=img_resized  # atualiza a região com a imagem redimensionada
+    cv.circle(frame, listPositions[globalIndex][1][0], 40, (0, 255, 0), -1)
+    cv.circle(frame, listPositions[globalIndex][1][1], 40, (0, 255, 0), -1)
     if key==27:#Se apertou o ESC
         clearInterval(varTimer)
         break
