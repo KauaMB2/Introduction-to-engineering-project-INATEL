@@ -1,8 +1,15 @@
 import pygame
 import subprocess
+from DetectPosition import getResult
+from DetectPosition import turnOnGame
+from dbCommands import Insert
+from tkinter import messagebox
+
 # Define the function to launch the Tkinter window
 def showInfoPage():#Function that calls the Info page
-    subprocess.call(["python", "my_tkinter.py"])
+    process=subprocess.Popen(["python", "my_tkinter.py"])
+    process.wait()
+    print(getResult)
 pygame.init()#It initializes pygame
 
 # Widths and heights
@@ -45,15 +52,23 @@ while True:
             quit()#Go out aplication
         elif event.type==pygame.MOUSEBUTTONDOWN:#If happened a mouse click...
             xPos, yPos=event.pos#It gets the mouse position
+            currentInput=None
             print(f"Mouse position: X={xPos} - Y={yPos}")
             if((xPos>590)and(xPos<640)and(yPos>0)and(yPos<50)):#Info button clicked...
                 showInfoPage()
             if((xPos>30)and(xPos<155)and(yPos>385)and(yPos<455)):#Login button clicked...
                 print("Login!")
+                turnOnGame()
             if((xPos>240)and(xPos<420)and(yPos>385)and(yPos<455)):#Recognize face button clicked...
-                print("Recognize!")
+                print("Recognize!",textInputUser,textInputPassword,"A")
+
+                
             if((xPos>485)and(xPos<606)and(yPos>385)and(yPos<455)):#Register face button clicked...
-                print("Register!")
+                if((textInputUser!="")and(textInputPassword!="")):
+                    x=Insert(textInputUser,textInputPassword)
+                    print(x)
+                else:
+                    print("Sorry, You cannot register null values in database!")
             if inputUser.collidepoint(event.pos):#Input user clicked...
                 activeInputUser=not activeInputUser#Toggle the var
             else:#Click happened out of Input user
@@ -67,9 +82,15 @@ while True:
             COLOR_INPUT_PASSWORD=COLOR_ACTIVE if activeInputPassword else COLOR_INACTIVE
         if event.type==pygame.KEYDOWN:
             if event.unicode.isprintable():
-                textInputUser += event.unicode
+                if(activeInputUser):
+                    textInputUser+=event.unicode
+                if(activeInputPassword):
+                    textInputPassword+=event.unicode
             elif event.key==pygame.K_BACKSPACE:
-                textInputUser=textInputUser[:-1]
+                if(activeInputUser):
+                    textInputUser=textInputUser[:-1]
+                if(activeInputPassword):
+                    textInputPassword=textInputPassword[:-1]
     screen.fill((180, 50, 180))
     pygame.draw.rect(screen, TOP_RECT_COLOR, (0, 0, SCREEN_WIDTH, TOP_RECT_HEIGHT))
     #Importing files and adding elements
