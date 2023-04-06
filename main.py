@@ -66,7 +66,8 @@ while True:
             if((xPos>485)and(xPos<606)and(yPos>385)and(yPos<455)):#Register face button clicked...
                 if((textInputUser!="")and(textInputPassword!="")):
                     x=Insert(textInputUser,textInputPassword)
-                    print(x)
+                    if (x==None):
+                        print(x)
                 else:
                     print("Sorry, You cannot register null values in database!")
             if inputUser.collidepoint(event.pos):#Input user clicked...
