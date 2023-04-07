@@ -44,6 +44,8 @@ pygame.time.Clock().tick(120)#Defines the FPS limit
 inputUser=pygame.Rect(50, 150, 200, 32)
 inputPassword=pygame.Rect(50,250,200,32)
 
+initialPage=True
+        
 
 while True:
     for event in pygame.event.get():#Pass in each event
@@ -56,88 +58,99 @@ while True:
             print(f"Mouse position: X={xPos} - Y={yPos}")
             if((xPos>590)and(xPos<640)and(yPos>0)and(yPos<50)):#Info button clicked...
                 showInfoPage()
-            if((xPos>30)and(xPos<155)and(yPos>385)and(yPos<455)):#Login button clicked...
-                print("Login!")
-                turnOnGame()
-            if((xPos>240)and(xPos<420)and(yPos>385)and(yPos<455)):#Recognize face button clicked...
-                print("Recognize!",textInputUser,textInputPassword,"A")
-
-                
-            if((xPos>485)and(xPos<606)and(yPos>385)and(yPos<455)):#Register face button clicked...
-                if((textInputUser!="")and(textInputPassword!="")):
-                    x=Insert(textInputUser,textInputPassword)
-                    if (x==None):
-                        print(x)
-                else:
-                    print("Sorry, You cannot register null values in database!")
-            if inputUser.collidepoint(event.pos):#Input user clicked...
-                activeInputUser=not activeInputUser#Toggle the var
-            else:#Click happened out of Input user
-                activeInputUser=False
-            if inputPassword.collidepoint(event.pos):#Input password clicked...
-                activeInputPassword=not activeInputPassword#Toggle the var
-            else:#Clicked out of Input user
-                activeInputPassword=False
-            # change the color of the input box
-            COLOR_INPUT_USER=COLOR_ACTIVE if activeInputUser else COLOR_INACTIVE
-            COLOR_INPUT_PASSWORD=COLOR_ACTIVE if activeInputPassword else COLOR_INACTIVE
+            if(initialPage):
+                if((xPos>30)and(xPos<155)and(yPos>385)and(yPos<455)):#Login button clicked...
+                    print("Login!")
+                    initialPage=False
+                if((xPos>240)and(xPos<420)and(yPos>385)and(yPos<455)):#Recognize face button clicked...
+                    print("Recognize!")
+                if((xPos>485)and(xPos<606)and(yPos>385)and(yPos<455)):#Register face button clicked...
+                    if((textInputUser!="")and(textInputPassword!="")):
+                        x=Insert(textInputUser,textInputPassword)
+                        if (x==None):
+                            print(x)
+                    else:
+                        print("Sorry, You cannot register null values in database!")
+                if inputUser.collidepoint(event.pos):#Input user clicked...
+                    activeInputUser=not activeInputUser#Toggle the var
+                else:#Click happened out of Input user
+                    activeInputUser=False
+                if inputPassword.collidepoint(event.pos):#Input password clicked...
+                    activeInputPassword=not activeInputPassword#Toggle the var
+                else:#Clicked out of Input user
+                    activeInputPassword=False
+                # change the color of the input box
+                COLOR_INPUT_USER=COLOR_ACTIVE if activeInputUser else COLOR_INACTIVE
+                COLOR_INPUT_PASSWORD=COLOR_ACTIVE if activeInputPassword else COLOR_INACTIVE
+            else:
+                if ((xPos<410)and(xPos>213)and(yPos>298)and(yPos<363)):
+                    turnOnGame()
         if event.type==pygame.KEYDOWN:
-            if event.unicode.isprintable():
-                if(activeInputUser):
-                    textInputUser+=event.unicode
-                if(activeInputPassword):
-                    textInputPassword+=event.unicode
-            elif event.key==pygame.K_BACKSPACE:
-                if(activeInputUser):
-                    textInputUser=textInputUser[:-1]
-                if(activeInputPassword):
-                    textInputPassword=textInputPassword[:-1]
-    screen.fill((180, 50, 180))
-    pygame.draw.rect(screen, TOP_RECT_COLOR, (0, 0, SCREEN_WIDTH, TOP_RECT_HEIGHT))
-    #Importing files and adding elements
-    logo=pygame.image.load('imgs/logo.png')#Cria objeto para a imagemLogo
-    logo=pygame.transform.scale(logo, (230, 40))#Defines the new width and height of the image
-    screen.blit(logo,(0, 5))
-    infoBtn=pygame.image.load('imgs/info.png')#Cria objeto para a imagemLogo
-    infoBtn=pygame.transform.scale(infoBtn, (70, 70))#Defines the new width and height of the image
-    screen.blit(infoBtn, (SCREEN_WIDTH*0.90, -10))
-    loginBtn=pygame.image.load('imgs/loginBtn.png')#Cria objeto para a imagemLogo
-    loginBtn=pygame.transform.scale(loginBtn, (130, 70))#Defines the new width and height of the image
-    screen.blit(loginBtn, (30, SCREEN_HEIGHT*0.80))
-    registerBtn=pygame.image.load('imgs/registerBtn.png')#Cria objeto para a imagemLogo
-    registerBtn=pygame.transform.scale(registerBtn, (130, 70))#Defines the new width and height of the image
-    screen.blit(registerBtn, ((SCREEN_WIDTH-160), SCREEN_HEIGHT*0.80))
-    recognizeBtn=pygame.image.load('imgs/recognizeBtn.png')#Cria objeto para a imagemLogo
-    recognizeBtn=pygame.transform.scale(recognizeBtn, (180, 70))#Defines the new width and height of the image
-    screen.blit(recognizeBtn, (SCREEN_WIDTH//2-80, SCREEN_HEIGHT*0.80))
-    
-    textFormated1=font3.render("User: ", False, BLACK)
-    userLabel=textFormated1.get_rect()
-    userLabel.center=(85, 130)
-    screen.blit(textFormated1, userLabel)
-    textFormated3=font3.render("Password: ", False, BLACK)
-    passwordLabel=textFormated3.get_rect()
-    passwordLabel.center=(115, 230)
-    screen.blit(textFormated3, passwordLabel)
-    textFormated2=font3.render("Welcome to MoveVision!!", False, BLACK)
-    welcomeText=textFormated2.get_rect()
-    welcomeText.center=(SCREEN_WIDTH//2, 70)
-    screen.blit(textFormated2, welcomeText)
-    # Render the inputUser text
-    txtUser=font2.render(textInputUser, True, (0,0,0))
-    # Resize the box if the useText is too long
-    width=max(200, txtUser.get_width()+10)
-    inputUser.w=width
-    # Draw the input box and text surface
-    pygame.draw.rect(screen, COLOR_INPUT_USER, inputUser, border_radius=5)
-    screen.blit(txtUser, inputUser)
-    # Render the inputUser text
-    txtPassword=font2.render(textInputPassword, True, (0,0,0))
-    # Resize the box if the useText is too long
-    width=max(200, txtPassword.get_width()+10)
-    inputPassword.w=width
-    # Draw the input box and text surface
-    pygame.draw.rect(screen, COLOR_INPUT_PASSWORD, inputPassword, border_radius=5)
-    screen.blit(txtPassword, inputPassword)
-    # Update display
+            if (initialPage):
+                if event.unicode.isprintable():
+                    if(activeInputUser):
+                        textInputUser+=event.unicode
+                    if(activeInputPassword):
+                        textInputPassword+=event.unicode
+                elif event.key==pygame.K_BACKSPACE:
+                    if(activeInputUser):
+                        textInputUser=textInputUser[:-1]
+                    if(activeInputPassword):
+                        textInputPassword=textInputPassword[:-1]
+    if (initialPage):
+        screen.fill((180, 50, 180))
+        pygame.draw.rect(screen, TOP_RECT_COLOR, (0, 0, SCREEN_WIDTH, TOP_RECT_HEIGHT))
+        #Importing files and adding elements
+        logo=pygame.image.load('imgs/logo.png')#Cria objeto para a imagemLogo
+        logo=pygame.transform.scale(logo, (230, 40))#Defines the new width and height of the image
+        screen.blit(logo,(0, 5))
+        infoBtn=pygame.image.load('imgs/info.png')#Cria objeto para a imagemLogo
+        infoBtn=pygame.transform.scale(infoBtn, (70, 70))#Defines the new width and height of the image
+        screen.blit(infoBtn, (SCREEN_WIDTH*0.90, -10))
+        loginBtn=pygame.image.load('imgs/loginBtn.png')#Cria objeto para a imagemLogo
+        loginBtn=pygame.transform.scale(loginBtn, (130, 70))#Defines the new width and height of the image
+        screen.blit(loginBtn, (30, SCREEN_HEIGHT*0.80))
+        registerBtn=pygame.image.load('imgs/registerBtn.png')#Cria objeto para a imagemLogo
+        registerBtn=pygame.transform.scale(registerBtn, (130, 70))#Defines the new width and height of the image
+        screen.blit(registerBtn, ((SCREEN_WIDTH-160), SCREEN_HEIGHT*0.80))
+        recognizeBtn=pygame.image.load('imgs/recognizeBtn.png')#Cria objeto para a imagemLogo
+        recognizeBtn=pygame.transform.scale(recognizeBtn, (180, 70))#Defines the new width and height of the image
+        screen.blit(recognizeBtn, (SCREEN_WIDTH//2-80, SCREEN_HEIGHT*0.80))
+        
+        textFormated1=font3.render("User: ", False, BLACK)
+        userLabel=textFormated1.get_rect()
+        userLabel.center=(85, 130)
+        screen.blit(textFormated1, userLabel)
+        textFormated3=font3.render("Password: ", False, BLACK)
+        passwordLabel=textFormated3.get_rect()
+        passwordLabel.center=(115, 230)
+        screen.blit(textFormated3, passwordLabel)
+        textFormated2=font3.render("Welcome to MoveVision!!", False, BLACK)
+        welcomeText=textFormated2.get_rect()
+        welcomeText.center=(SCREEN_WIDTH//2, 70)
+        screen.blit(textFormated2, welcomeText)
+        # Render the inputUser text
+        txtUser=font2.render(textInputUser, True, (0,0,0))
+        # Resize the box if the useText is too long
+        width=max(200, txtUser.get_width()+10)
+        inputUser.w=width
+        # Draw the input box and text surface
+        pygame.draw.rect(screen, COLOR_INPUT_USER, inputUser, border_radius=5)
+        screen.blit(txtUser, inputUser)
+        # Render the inputUser text
+        txtPassword=font2.render(textInputPassword, True, (0,0,0))
+        # Resize the box if the useText is too long
+        width=max(200, txtPassword.get_width()+10)
+        inputPassword.w=width
+        # Draw the input box and text surface
+        pygame.draw.rect(screen, COLOR_INPUT_PASSWORD, inputPassword, border_radius=5)
+        screen.blit(txtPassword, inputPassword)
+    else:
+        pygame.draw.rect(screen,(0,0,180),(0,TOP_RECT_HEIGHT,SCREEN_WIDTH,SCREEN_HEIGHT-TOP_RECT_HEIGHT))#Desenha retangulo
+        #Importing files and adding elements
+        playBTn=pygame.image.load('imgs/playBtn.png')#Cria objeto para a imagemLogo
+        playBTn=pygame.transform.scale(playBTn, (230, 85))#Defines the new width and height of the image
+        screen.blit(playBTn,(SCREEN_WIDTH//2-120, SCREEN_HEIGHT*0.6))
+        x = 100
+        y = 100
     pygame.display.flip()

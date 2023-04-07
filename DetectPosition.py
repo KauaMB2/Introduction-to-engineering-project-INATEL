@@ -85,7 +85,13 @@ def turnOnGame():
         frame=cv.flip(frame, 1)
         print(globalIndex, len(listPositions))
         debug_frame = copy.deepcopy(frame)#Pega o "frame" e joga no debug_frame
-        frame=detector.findPose(frame,debug_frame,True,True)
+        try:
+            frame=detector.findPose(frame,debug_frame,True,True)
+        except Exception:
+            print(Exception)
+            _,frame=cap.read()
+            frame=cv.flip(frame, 1)
+            debug_frame = copy.deepcopy(frame)#Pega o "frame" e joga no debug_frame
         lmList=detector.findPosition(frame,False)
         cv.line(frame, (divWidth, 0), (divWidth, hCam), (0, 0, 0), 3)
         cv.line(frame, (426, 0), (426, hCam), (0, 0, 0), 3)
@@ -131,6 +137,7 @@ def turnOnGame():
             clearInterval(varTimer)
             cap.release() # libera a câmera
             cv.destroyAllWindows() # fecha todas as janelas
+            frame=None
             break
         cv.imshow("Video",frame)
         cv.setMouseCallback("Video", onMouse)
