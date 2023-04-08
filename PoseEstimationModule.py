@@ -73,9 +73,7 @@ class poseDetector():
         angle=int(angle)#Tira as casas decimais
         if(angle<0):
             angle=angle+360
-        #print(angle)
-        
-        #Draw
+            
         if drawPoints:
             cv.line(frame,(x1,y1),(x2,y2),(255,0,0),3)
             cv.line(frame,(x3,y3),(x2,y2),(255,0,0),3)
@@ -91,7 +89,6 @@ def main():
     cTime=0
     pTime=0
     detector=poseDetector()
-    #cap=cv.VideoCapture(r"videos\8.mp4")
     cap=cv.VideoCapture(0,cv.CAP_DSHOW)
 
     while True:
@@ -99,7 +96,7 @@ def main():
         debug_frame = copy.deepcopy(frame)#Pega o "frame" e joga no debug_frame
         frame=detector.findPose(frame,debug_frame)
         lmList=detector.findPosition(frame)
-        if len(lmList) != 0:
+        if len(lmList)!=0:
             #Right Arm
             detector.findAngle(frame,12,14,16)
             #Left arm
