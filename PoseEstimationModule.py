@@ -5,14 +5,14 @@ import numpy as np
 import copy
 import math
 def calc_bounding_rect(frame, landmarks):#Função para calcular a borda do retângulo
-    frame_width, frame_height = frame.shape[1], frame.shape[0]
-    landmark_array = np.empty((0, 2), int)
-    for _, landmark in enumerate(landmarks.landmark):
-        landmark_x = min(int(landmark.x * frame_width), frame_width - 1)
-        landmark_y = min(int(landmark.y * frame_height), frame_height - 1)
-        landmark_point = [np.array((landmark_x, landmark_y))]
-        landmark_array = np.append(landmark_array, landmark_point, axis=0)
-    x, y, w, h = cv.boundingRect(landmark_array)
+    frame_width, frame_height = frame.shape[1], frame.shape[0]#It gets the width and height
+    landmark_array = np.empty((0, 2), int)#It create a numpy array
+    for _, landmark in enumerate(landmarks.landmark):#It pass in each landmark
+        landmark_x = min(int(landmark.x * frame_width), frame_width - 1)#It transform the landmark position accordgin the screen width
+        landmark_y = min(int(landmark.y * frame_height), frame_height - 1)#It transform the landmark position accordgin the screen height
+        landmark_point = [np.array((landmark_x, landmark_y))]#It Puts the point in a numpy array
+        landmark_array = np.append(landmark_array, landmark_point, axis=0)#It adds the landmarkArray more one position
+    x, y, w, h = cv.boundingRect(landmark_array)#Draw the picture
     return [x, y, x + w, y + h]
 class poseDetector():
     def __init__(self,mode=False,smooth=True,detectionConfidence=0.5,trackConfidence=0.5):
@@ -20,12 +20,10 @@ class poseDetector():
         self.smooth=smooth
         self.detectionConfidence=detectionConfidence
         self.trackConfidence=trackConfidence
-        self.mpDraw=mp.solutions.drawing_utils
-        self.mpPose=mp.solutions.pose
+        self.mpDraw=mp.solutions.drawing_utils#It returns the function position in the memory
+        self.mpPose=mp.solutions.pose#It returns the function position in the memory
         self.pose=self.mpPose.Pose(static_image_mode=self.mode,min_detection_confidence=self.detectionConfidence,min_tracking_confidence=self.trackConfidence)
-        """DENTRO DA BIBLIOTA -  ATENÇÃO, A EXPLICAÇÃO DO VÍDEO ESTÁ DESATUALIZADA
-        O QUE REALMENTE ESTÁ DENTRO DA BIBLIOTECA:
-        
+        """INSIDE THE LIBRARY:
         def __init__(self,
                static_image_mode=False,
                model_complexity=1,

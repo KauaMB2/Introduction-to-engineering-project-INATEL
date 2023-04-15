@@ -80,14 +80,12 @@ result=None
 points=0
 firstAttempt=True
 globalIndex=0
-def getResult():
-    return result
-def newAttempt():
+def newAttempt():#It creates a new attempt in the game(After complete a cicle)
     global pictures, listPositions, randomValue, lastCorrectPositions, currentRightColumnPosition, currentRightLinePosition, currentLeftColumnPosition, currentLeftLinePosition, globalIndex, firstAttempt, paused, points, varTimer,seconds
-    if (firstAttempt==True):
+    if (firstAttempt==True):#If it is the first attempt...
        listPositions=[['26.png', [(320, 80), (533, 244)], [(0, 1), (1, 2)]]]
        firstAttempt=False
-    if (((currentRightLinePosition,currentRightColumnPosition)!=listPositions[globalIndex][2][1])or((currentLeftLinePosition,currentLeftColumnPosition)!=listPositions[globalIndex][2][0])):
+    if (((currentRightLinePosition,currentRightColumnPosition)!=listPositions[globalIndex][2][1])or((currentLeftLinePosition,currentLeftColumnPosition)!=listPositions[globalIndex][2][0])):#If he lost the game...
         print("PERDEU!!!!")
         paused=True
         dbCommands.setNewRecord(points,currentUserName)
@@ -95,27 +93,26 @@ def newAttempt():
         globalIndex=0
         seconds=3
         return
-    if((globalIndex==len(listPositions)-1)and(paused==False)):
+    if((globalIndex==len(listPositions)-1)and(paused==False)):#If he completed a cicle...
         points=points+len(listPositions)
         print("GANHOU, PRÓXIMA!!!")
         updateList()
         globalIndex=0
     else:
         globalIndex=globalIndex+1
-def updateList():
+def updateList():#It put a new position in the list position
     global listPositions, randomValue, lastCorrectPositions,currentRightColumnPosition,currentRightLinePosition,currentLeftColumnPosition,currentLeftLinePosition
-    
     randomValue=random.randint(0, 8)
     while(lastCorrectPositions==pictures[randomValue]):
         randomValue=random.randint(0, 8)
     listPositions.append(pictures[randomValue])
     lastCorrectPositions=pictures[randomValue]
     print(listPositions)
-def onMouse(event, x, y, flags, param):
-    if event == cv.EVENT_LBUTTONDOWN:
+def onMouse(event, x, y, flags, param):#openCV mouse event
+    if event == cv.EVENT_LBUTTONDOWN:#IF it was a click
         print("Posição do mouse: x={}, y={}".format(x, y))
 seconds=3
-def counter():
+def counter():#Function that is called each second
     global seconds
     seconds=seconds-1 if seconds>0 else 0
     if seconds==0:
@@ -144,11 +141,10 @@ while True:
     if len(lmList)!=0:
         leftHand=lmList[18]
         rightHand=lmList[17]
-        #Right Arm
-        detector.findAngle(frame,12,14,18)
-        #Left arm
-        detector.findAngle(frame,11,13,17)
+        detector.findAngle(frame,12,14,18)#Right Arm
+        detector.findAngle(frame,11,13,17)#Left arm
         for i in range(0,3,1):#range(start, stop, step)
+            #It is responsable to get the current X and Y position in the 3x3 matrix
             if((rightHand[1]<arrayX[i][1])and(rightHand[1]>arrayX[i][0])):
                 currentRightColumnPosition=i
             if((rightHand[2]<arrayY[i][1])and(rightHand[2]>arrayY[i][0])):
@@ -158,7 +154,7 @@ while True:
             if((leftHand[2]<arrayY[i][1])and(leftHand[2]>arrayY[i][0])):
                 currentLeftLinePosition=i
     cTime=time.time()
-    fps=int(1/(cTime-pTime))
+    fps=int(1/(cTime-pTime))#It gets the FPS
     pTime=cTime
     cv.putText(frame,f"FPS: {(fps)}",(5,30),cv.FONT_HERSHEY_PLAIN,2,PINK,3)#putText(frame,text,(positionX,positionY),font,tamanho,(B,G,R),espessura)
     key=cv.waitKey(1)#ESC = 27
@@ -203,10 +199,8 @@ while True:
                         currentUserName=textInputUser
                     else:
                         showAlert2Page()
-                if((xPos>240)and(xPos<420)and(yPos>385)and(yPos<455)):#Recognize face button clicked...
-                    print("Recognize!")
                 if((xPos>485)and(xPos<606)and(yPos>385)and(yPos<455)):#Register face button clicked...
-                    if((textInputUser!="")and(textInputPassword!="")):
+                    if((textInputUser!="")and(textInputPassword!="")):  
                         resultQuery=dbCommands.Insert(textInputUser,textInputPassword)
                         if (resultQuery==None):
                             dbCommands.login(textInputUser,textInputPassword)
@@ -233,18 +227,18 @@ while True:
                         listPositions=[['26.png', [(320, 80), (533, 244)], [(0, 1), (1, 2)]]]
                         globalIndex=0
         if event.type==pygame.KEYDOWN:
-            if (initialPage):
+            if (initialPage):#If it is in the initial page
                 if event.unicode.isprintable():
-                    if(activeInputUser):
-                        textInputUser+=event.unicode
-                    if(activeInputPassword):
-                        textInputPassword+=event.unicode
-                elif event.key==pygame.K_BACKSPACE:
-                    if(activeInputUser):
-                        textInputUser=textInputUser[:-1]
-                    if(activeInputPassword):
-                        textInputPassword=textInputPassword[:-1]
-    if (initialPage):
+                    if(activeInputUser):#If you clicked in the input user field
+                        textInputUser+=event.unicode#It gets the caracter clicked in the keyboard
+                    if(activeInputPassword):#If YOU clicked in the input password field
+                        textInputPassword+=event.unicode#It gets the caracter clicked in the keyboard
+                elif event.key==pygame.K_BACKSPACE:#If you clicked in the backspace (<-) 
+                    if(activeInputUser):#If you clicked in the input user field
+                        textInputUser=textInputUser[:-1]#Delete the last caracter
+                    if(activeInputPassword):#If YOU clicked in the input password field
+                        textInputPassword=textInputPassword[:-1]#Delete the last caracter
+    if (initialPage):#If it is the initial page
         screen.fill((180, 50, 180))
         pygame.draw.rect(screen, TOP_RECT_COLOR, (0, 0, SCREEN_WIDTH, TOP_RECT_HEIGHT))
         #Importing files and adding elements
@@ -260,9 +254,6 @@ while True:
         registerBtn=pygame.image.load('imgs/registerBtn.png')#Cria objeto para a imagemLogo
         registerBtn=pygame.transform.scale(registerBtn, (130, 70))#Defines the new width and height of the image
         screen.blit(registerBtn, ((SCREEN_WIDTH-160), SCREEN_HEIGHT*0.80))
-        recognizeBtn=pygame.image.load('imgs/recognizeBtn.png')#Cria objeto para a imagemLogo
-        recognizeBtn=pygame.transform.scale(recognizeBtn, (180, 70))#Defines the new width and height of the image
-        screen.blit(recognizeBtn, (SCREEN_WIDTH//2-80, SCREEN_HEIGHT*0.80))
         
         textFormated1=font3.render("User: ", False, BLACK)
         userLabel=textFormated1.get_rect()
