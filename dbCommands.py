@@ -42,6 +42,8 @@ def getUserRecord(name):
 def setNewRecord(newRecord,name):
     initConection()
     currentRecord=getUserRecord(name)[0]
+    if(currentRecord==None):
+        currentRecord=0
     initConection()
     if(newRecord>currentRecord):
         cursor.execute("UPDATE mainT SET record = ? WHERE name = ?",(newRecord,name))#It defines the query
