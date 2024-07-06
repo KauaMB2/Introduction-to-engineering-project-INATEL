@@ -116,7 +116,7 @@ def counter():#Function that is called each second
     global seconds
     seconds=seconds-1 if seconds>0 else 0
     if seconds==0:
-        seconds=2
+        seconds=1
         if(paused==False):
             newAttempt()
 cap=cv.VideoCapture(0,cv.CAP_DSHOW)
