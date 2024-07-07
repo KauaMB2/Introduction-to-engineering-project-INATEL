@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 import subprocess
 from Timer import setInterval
 from Timer import clearInterval
@@ -80,6 +81,11 @@ result=None
 points=0
 firstAttempt=True
 globalIndex=0
+
+#Initializing pygame sounds
+somAcerto=pygame.mixer.Sound('som/acerto.wav')#Cria objeto para som acerto
+somErro=pygame.mixer.Sound('som/errado.wav')#Cria objeto para som erro
+
 def newAttempt():#It creates a new attempt in the game(After complete a cicle)
     global pictures, listPositions, randomValue, lastCorrectPositions, currentRightColumnPosition, currentRightLinePosition, currentLeftColumnPosition, currentLeftLinePosition, globalIndex, firstAttempt, paused, points, varTimer,seconds
     if (firstAttempt==True):#If it is the first attempt...
@@ -92,7 +98,9 @@ def newAttempt():#It creates a new attempt in the game(After complete a cicle)
         points=0
         globalIndex=0
         seconds=3
+        somErro.play()
         return
+    somAcerto.play()
     if((globalIndex==len(listPositions)-1)and(paused==False)):#If he completed a cicle...
         points=points+len(listPositions)
         print("GANHOU, PRÓXIMA!!!")
@@ -107,6 +115,7 @@ def updateList():#It put a new position in the list position
         randomValue=random.randint(0, 8)
     listPositions.append(pictures[randomValue])
     lastCorrectPositions=pictures[randomValue]
+    
     print(listPositions)
 def onMouse(event, x, y, flags, param):#openCV mouse event
     if event == cv.EVENT_LBUTTONDOWN:#IF it was a click
